@@ -1,10 +1,17 @@
+#!/usr/bin/env node
+
 var _         = require('underscore');
 var commander = require('commander');
 var Swagger   = require('swagger-client');
 var util      = require('util');
 var winston   = require('winston');
+var chalk     = require('chalk');
 
-// TODO
+var config    = require('./config/config.json');
+var logColors = require('./lib/logColors');
+var ArgumentHelp = require('./lib/ArgumentHelp');
+var ParameterHelp = require('./lib/ParameterHelp');
+
 //var logger    = require('./lib/logger').init();
 var logger = new (winston.Logger)({
         transports: [
@@ -15,10 +22,12 @@ var logger = new (winston.Logger)({
         ]
     });
 
-// TODO
-var swagSpecURL = 'http://petstore.swagger.io/v2/swagger.json';
+var swagSpecURL = config.swagger_spec_url;
+if (!swagSpecURL) {
+    logger.error('Swagger spec URL not set');
+    return;
+}
 
-var parentCommand = process.argv[2];
 new Swagger({
         url: swagSpecURL,
         usePromise: true
@@ -28,55 +37,158 @@ new Swagger({
      console.error(err);
  });
 
+function commanderSetup(client) {
+    var parentCommand = process.argv[2];
+
+    // Split by "tags"
+    var apis = client.apis;
+
+    // If parentCommand given, create subcommand program
+    // Otherwise, just create the high level commands
+    if (!parentCommand || !_.has(apis, parentCommand)) {
+        commander
+            .usage('[parent-command] [options]');
+        setupParentcommand(parentCommand, apis);
+    } else if (parentCommand) {
+        commander
+            .usage(parentCommand + ' [sub-command] [options]');
+        setupSubcommand(apis[parentCommand]);
+    }
+
+    return client;
+}
+
+function setupParentcommand(parentCommand, apis) {
+    _.each(apis, function (api, apiKey) {
+        if (apiKey !== 'help') {
+            createCommandForApi(api);
+        }
+    });
+
+    commander.parse(process.argv);
+    if (parentCommand) {
+        logger.error('Unrecognized parent command: ' + parentCommand);
+    }
+    commander.help();
+}
+function createCommandForApi(apiObj) {
+    var cmd,
+        desc;
+
+    cmd = apiObj.label;
+    desc = apiObj.description;
+
+    var cmdObj =
+        commander
+            .command(cmd)
+            .description(desc);
+    return cmdObj;
+}
+
 function setupSubcommand(apiObj) {
-    logger.info('Setting up operations for: ' + apiObj.label);
+    logger.debug('Setting up operations for: ' + apiObj.label);
     var operations = apiObj.operations;
 
+    _.each(
+        operations,
+        createCommandForApiOperation.bind(this, apiObj)
+    );
+
+    if (!process.argv[3]) {
+        // No sub-command given
+        commander.help();
+    }
+
+    // Remove the parentCommand
+    process.argv.splice(2, 1);
+    commander.parse(process.argv);
+}
+function createCommandForApiOperation(apiObj, op, opKey) {
     var cmdName,
         cmdObj,
         path,
         desc,
         cmdAction;
+    var optionKeys = [];
+    var argumentNames = [];
 
-    _.each(operations,
-        function (op, opKey) {
-            var optionKeys = [];
-            var argumentNames = [];
+    logger.debug('Operation: ' + opKey);
+    cmdName = opKey;
+    path = op.basePath + op.path;
+    desc = op.method.toUpperCase() + ' ' + path + ' ' + op.summary;
+    cmdAction = apiObj[opKey];
 
-            logger.info('Operation: ' + opKey);
-            cmdName = opKey;
-            path = op.basePath + op.path;
-            desc = op.method.toUpperCase() + ' ' + path + ' ' + op.summary;
-            cmdAction = apiObj[opKey];
+    var parameterHelp = [];
+    var argumentHelp = [];
 
-            // Add required parameters as arguments
-            var parameters = op.parameters; // Array
-            _.each(parameters,
-                function (parameter) {
-                    // --optionArg <optionArg>
-                    if (parameter.required === true) {
-                        cmdName += ' <' + parameter.name + '>';
-                        argumentNames.push(parameter.name);
-                    }
-                }
-            );
-
-            // build command
-            cmdObj = commander
-                        .command(cmdName)
-                        .description(desc);
-
-            // Add remaining parameters as options
-            optionKeys = addParameterOptionsToCommand(cmdObj, op);
-
-            addDefaultOptionsToCommand(cmdObj);
-
-            // Add action
-            cmdObj.action(
-                runAction.bind(this, cmdAction, argumentNames, optionKeys)
-            );
+    // Add required parameters as arguments
+    var parameters = op.parameters; // Array
+    _.each(parameters,
+        function (parameter) {
+            // --optionArg <optionArg>
+            if (parameter.required === true) {
+                cmdName += ' <' + parameter.name + '>';
+                argumentNames.push(parameter.name);
+                argumentHelp.push(new ArgumentHelp(parameter.name, parameter.signature, parameter.description));
+            } else {
+                parameterHelp.push(new ParameterHelp(parameter.name, parameter.signature, parameter.description));
+            }
         }
     );
+
+    // build command
+    cmdObj = commander
+                .command(cmdName)
+                .description(desc);
+
+    // Add remaining parameters as options
+    optionKeys = addParameterOptionsToCommand(cmdObj, op);
+
+    addDefaultOptionsToCommand(cmdObj);
+
+    // Add action
+    cmdObj.action(
+        runAction.bind(this, cmdAction, argumentNames, optionKeys)
+    )
+    .on('--help',
+        function (argHelp, paramsHelp, note) {
+            if (argHelp && argHelp.length > 0) {
+                showCustomParameterHelp(argHelp, 'Required Parameters (Arguments)');
+            }
+            if (paramsHelp && paramsHelp.length > 0) {
+                showCustomParameterHelp(paramsHelp, 'Optional Parameters');
+            }
+            if (note) {
+                showImplementationNoteHelp(note);
+            }
+        }.bind(this, argumentHelp, parameterHelp, op.description)
+    );
+}
+
+function showImplementationNoteHelp(note) {
+    console.log('  Implementation Note: ' + note + '\n');
+    console.log();
+}
+
+function showCustomParameterHelp(args, header) {
+    console.log('  ' + header + ':\n');
+    var sigLines,
+        argumentSigPretty;
+    _.each(args, function (argHelpObj) {
+        // Show name
+        console.log('   ' + argHelpObj.argumentName + ' - ' + argHelpObj.description);
+        if (argHelpObj.argumentSignature.length < 30) {
+            console.log('     Data Type: ' + logColors.argumentSignature(argHelpObj.argumentSignature));
+        } else {
+            console.log('     Data Type:');
+            argumentSigPretty = argHelpObj.htmlSignaturePretty();
+            sigLines = argumentSigPretty.split('\n');
+            _.each(sigLines, function (line) {
+                console.log(logColors.argumentSignature('     ' + line));
+            });
+        }
+    });
+    console.log();
 }
 
 function runAction(cmdAction, argumentNames, optionKeys) {
@@ -115,22 +227,44 @@ function runAction(cmdAction, argumentNames, optionKeys) {
     logger.verbose('Calling action with options: ' + util.inspect(actionArguments));
     cmdAction(actionArguments)
         .then(
-            function (response) {
-                if (opts.fullResponse || opts.verbose) {
-                    logger.info('FULL response: ' + util.inspect(response));
-                } else {
-                    logger.info('status:', response.status);
-                    logger.info('data:', response.data);
-                }
+            handleCommandResponse.bind(this, opts),//success
+            handleCommandResponse.bind(this, opts) //fail
+        )
+        .catch(
+            function (err) {
+                logger.error('Error running command...', err);
             }
         );
+}
+
+function handleCommandResponse(opts, response) {
+    var responseData;
+    if (opts.fullResponse || opts.verbose) {
+        responseData = util.inspect(response);
+    } else {
+        responseData = response.data;
+    }
+
+    logger.info('status:', response.status);
+    if (opts.prettyResponse) {
+        try {
+            // can't use logger here since it messes up the formatting
+            console.log('data:', JSON.parse(responseData));
+        } catch (e) {
+            // error in JSON parsing, fallback
+            logger.info(responseData);
+        }
+    } else {
+        logger.info('data: ' + responseData);
+    }
 }
 
 function addDefaultOptionsToCommand(commandObject) {
     commandObject
         .option('-v, --verbose', 'Display verbose (all) level log details')
         .option('-d, --debug', 'Display debug level log details')
-        .option('-F, --fullResponse', 'Display the full response object from Swagger');
+        .option('-F, --fullResponse', 'Display the full response object from Swagger')
+        .option('-P, --prettyResponse', 'Display pretty formatted response');
 }
 
 // Adds optional parameters (parameter.required == false)
@@ -171,63 +305,4 @@ function addParameterOptionsToCommand(commandObject, operation) {
     );
 
     return optionNames;
-}
-
-function setupParentcommand(parentCommand, apis) {
-    _.each(apis, function (api, apiKey) {
-        if (apiKey !== 'help') {
-            showApis(api);
-        }
-    });
-
-    commander.parse(process.argv);
-    if (parentCommand) {
-        logger.error('Unrecognized parent command: ' + parentCommand);
-    }
-    commander.outputHelp();
-}
-function showApis(apiObj) {
-    var cmd,
-        desc;
-
-    cmd = apiObj.label;
-    desc = apiObj.description;
-
-    var cmdObj =
-        commander
-            .command(cmd)
-            .option('-T, test', 'testing')
-            .description(desc)
-            .action(function (opts) {
-                console.log('opts', opts);
-            });
-    return cmdObj;
-}
-
-function commanderSetup(client) {
-    // Split by "tags"
-    var apis = client.apis;
-    // If parentCommand given, create subcommand program
-
-    // Otherwise, just create the high level commands
-    if (!parentCommand || !_.has(apis, parentCommand)) {
-        commander
-            .usage('[parent-command] [options]');
-        setupParentcommand(parentCommand, apis);
-    } else if (parentCommand) {
-        commander
-            .usage(parentCommand + ' [sub-command] [options]');
-        setupSubcommand(apis[parentCommand]);
-
-        if (!process.argv[3]) {
-            // No sub-command given
-            commander.outputHelp();
-        }
-
-        // Remove the parentCommand
-        process.argv.splice(2, 1);
-        commander.parse(process.argv);
-    }
-
-    return client;
 }
