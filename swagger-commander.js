@@ -26,7 +26,7 @@ if (!swagSpecURL) {
     return;
 }
 
-//swagSpecURL = http://petstore.swagger.io/v2/swagger.json // DEMO url
+swagSpecURL = 'http://petstore.swagger.io/v2/swagger.json'; // DEMO url
 new Swagger({
         url: swagSpecURL,
         usePromise: true
