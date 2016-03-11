@@ -1,13 +1,14 @@
 #!/usr/bin/env node
-
 var _         = require('underscore');
 var commander = require('commander');
 var Swagger   = require('swagger-client');
-//var util      = require('util');
 var winston   = require('winston');
-//var chalk     = require('chalk');
 
-var logger = new (winston.Logger)({
+// Custom libs
+var config                = require('./config/config.json');
+var apiCommander          = require('./lib/apiCommander');
+var apiOperationCommander = require('./lib/apiOperationCommander');
+var logger    = new (winston.Logger)({
         transports: [
             new (winston.transports.Console)({
                 colorize: true,
@@ -15,10 +16,6 @@ var logger = new (winston.Logger)({
             })
         ]
     });
-var config    = require('./config/config.json');
-//var logColors = require('./lib/logColors');
-var apiCommander = require('./lib/apiCommander');
-var apiOperationCommander = require('./lib/apiOperationCommander');
 
 apiCommander.init(logger);
 apiOperationCommander.init(logger);
@@ -29,6 +26,7 @@ if (!swagSpecURL) {
     return;
 }
 
+//swagSpecURL = http://petstore.swagger.io/v2/swagger.json // DEMO url
 new Swagger({
         url: swagSpecURL,
         usePromise: true
@@ -47,12 +45,17 @@ function commanderSetup(client) {
     // Split by "tags"
     var apis = client.apis;
 
+    var unrecognizedParentCommand = parentCommand && !_.has(apis, parentCommand);
+
     // If parentCommand given, create subcommand program
     // Otherwise, just show the available APIs
-    if (!parentCommand || !_.has(apis, parentCommand)) {
+    if (!parentCommand || unrecognizedParentCommand) {
+        if (unrecognizedParentCommand) {
+            logger.error('Unrecognized parent command: ' + parentCommand);
+        }
         commander
             .usage('[parent-command] [options]');
-        apiCommander.setupParentcommand(parentCommand, apis);
+        apiCommander.setupParentcommand(apis);
     } else if (parentCommand) {
         commander
             .usage(parentCommand + ' [sub-command] [options]');
