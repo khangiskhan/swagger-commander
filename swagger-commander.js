@@ -50,7 +50,7 @@ function commanderSetup(client) {
     // If parentCommand given, create subcommand program
     // Otherwise, just show the available APIs
     if (!parentCommand || unrecognizedParentCommand) {
-        if (unrecognizedParentCommand) {
+        if (unrecognizedParentCommand && (parentCommand !== '-h') && (parentCommand !== '--help')) {
             logger.error('Unrecognized parent command: ' + parentCommand);
         }
         commander
