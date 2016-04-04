@@ -2,7 +2,15 @@
   "name": "swagger-commander",
   "version": "0.1.0",
   "description": "Command line interface to Swagger APIs",
-  "main": "swagger-commander.js",
+  "bin": {
+      "swagger-commander": "./index.js"
+  },
+  "keywords": [
+      "swagger",
+      "swagger-cli",
+      "commander",
+      "terminal"
+  ],
   "dependencies": {
     "chalk": "^1.1.1",
     "commander": "^2.9.0",
