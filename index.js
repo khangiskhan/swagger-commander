@@ -1,4 +1,10 @@
 #!/usr/bin/env node
+
+/*
+ * Copyright (c) 2015-2016 Khang Nguyen
+ * MIT Licensed
+ */
+
 var _         = require('underscore');
 var commander = require('commander');
 var Swagger   = require('swagger-client');
