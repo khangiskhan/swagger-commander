@@ -9,9 +9,12 @@ var _         = require('underscore');
 var commander = require('commander');
 var Swagger   = require('swagger-client');
 var winston   = require('winston');
+var fs        = require('fs');
+var chalk     = require('chalk');
 
 // Custom libs
-var config                = require('./config/config.json');
+var CONFIG_FILE_PATH      = './config/config.json';
+var config                = require(CONFIG_FILE_PATH);
 var apiCommander          = require('./lib/apiCommander');
 var apiOperationCommander = require('./lib/apiOperationCommander');
 var logger    = new (winston.Logger)({
@@ -26,20 +29,30 @@ var logger    = new (winston.Logger)({
 apiCommander.init(logger);
 apiOperationCommander.init(logger);
 
+if (process.argv[2] === 'set-swagger-url') {
+    if (process.argv[3]) {
+        setSwaggerUrlConfig(process.argv[3]);
+    } else {
+        logger.error('No swagger file URL given');
+    }
+    return;
+}
+
 var swagSpecURL = config.swagger_spec_url;
 if (!swagSpecURL) {
     logger.error('Swagger spec URL not set');
     return;
 }
 
-swagSpecURL = 'http://petstore.swagger.io/v2/swagger.json'; // DEMO url
+//swagSpecURL = 'http://petstore.swagger.io/v2/swagger.json'; // DEMO url
 new Swagger({
         url: swagSpecURL,
         usePromise: true
     }
 ).then(commanderSetup)
  .catch(function (err) {
-     console.error(err);
+     logger.error('Error connecting to Swagger file URL: ' + swagSpecURL);
+     logger.error(err);
  });
 
 /*************
@@ -61,6 +74,14 @@ function commanderSetup(client) {
         }
         commander
             .usage('[parent-command] [options]');
+
+        commander.on('--help', function () {
+            console.log('  Config:');
+            console.log();
+            console.log('    to point swagger-commander to a different swagger file URL:');
+            console.log(chalk.blue('       swagger-commander set-swagger-url <url>'));
+        });
+
         apiCommander.setupParentcommand(apis);
     } else if (parentCommand) {
         commander
@@ -69,4 +90,19 @@ function commanderSetup(client) {
     }
 
     return client;
+}
+
+function setSwaggerUrlConfig(swaggerFileUrl) {
+    var swagConfig = {
+        'swagger_spec_url': swaggerFileUrl
+    };
+
+    fs.writeFile(CONFIG_FILE_PATH, JSON.stringify(swagConfig), function (err) {
+        if (err) {
+            logger.info('There has been an error setting Swagger file URL.');
+            logger.error(err.message);
+            return;
+        }
+        logger.info('Swagger file URL changed to: ', swaggerFileUrl);
+    });
 }
