@@ -1,20 +1,20 @@
 {
   "name": "swagger-commander",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Command line interface to Swagger APIs",
   "bin": {
-      "swagger-commander": "./index.js"
+    "swagger-commander": "./index.js"
   },
   "homepage": "https://github.com/khangiskhan/swagger-commander",
   "repository": {
-      "type": "git",
-      "url": "https://github.com/khangiskhan/swagger-commander"
+    "type": "git",
+    "url": "https://github.com/khangiskhan/swagger-commander"
   },
   "keywords": [
-      "swagger",
-      "swagger-cli",
-      "commander",
-      "terminal"
+    "swagger",
+    "swagger-cli",
+    "commander",
+    "terminal"
   ],
   "dependencies": {
     "chalk": "^1.1.1",
@@ -26,6 +26,8 @@
     "winston": "^2.2.0"
   },
   "author": "Khang Nguyen <khnguyen@ncsu.edu>",
-  "contributors": ["Khang Nguyen <khnguyen@ncsu.edu>"],
+  "contributors": [
+    "Khang Nguyen <khnguyen@ncsu.edu>"
+  ],
   "license": "MIT"
 }
