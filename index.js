@@ -13,7 +13,7 @@ var fs        = require('fs');
 var chalk     = require('chalk');
 
 // Custom libs
-var CONFIG_FILE_PATH      = './config/config.json';
+var CONFIG_FILE_PATH      = __dirname + '/config/config.json';
 var config                = require(CONFIG_FILE_PATH);
 var apiCommander          = require('./lib/apiCommander');
 var apiOperationCommander = require('./lib/apiOperationCommander');
