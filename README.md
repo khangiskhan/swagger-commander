@@ -35,7 +35,7 @@ Show detailed help for the "addPet" operation (output not shown)
 
 Run the addPet operation (notice the JSON enclosed in single quotes)
 
-    $ swagger-commander pet addPet '{"id":1337,"name":"Weasley", "status":"sold"}'
+    $ swagger-commander pet addPet '{"name":"Weasley", "status":"sold"}'
     info: status: 200
     info: data: {"id":1459973494707,"name":"Weasley","photoUrls":[],"tags":[],"status":"sold"}
 
