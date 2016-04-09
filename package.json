@@ -1,7 +1,7 @@
 {
   "name": "swagger-commander",
   "version": "0.2.2",
-  "description": "Command line interface to Swagger APIs",
+  "description": "Plug & play command line interface to Swagger APIs",
   "bin": {
     "swagger-commander": "./index.js"
   },
@@ -13,8 +13,12 @@
   "keywords": [
     "swagger",
     "swagger-cli",
+    "swagger-tools",
     "commander",
-    "terminal"
+    "swagger-console",
+    "swagger-commander",
+    "swagger-client",
+    "swagger-ui"
   ],
   "dependencies": {
     "chalk": "^1.1.1",

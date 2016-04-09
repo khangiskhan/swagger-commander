@@ -1,6 +1,6 @@
 # Swagger Commander
 
-Inspired by Swagger UI, Swagger Commander is a plug & play command-line/terminal/CLI tool to visualize and consume Swagger API's. Simply point the tool to a Swagger specification (file) URL and you can immediately view and consume your API endpoints.
+Inspired by Swagger UI, Swagger Commander is a plug & play command-line (terminal, cli, console, etc) tool to visualize and consume Swagger API's. Simply point the tool to a Swagger specification (file) URL and you can immediately view and consume your API endpoints.  Under the covers, swagger-commander uses swagger-client.
 
 ## Installation
 
@@ -44,4 +44,3 @@ Get the pet object you just created
     $ swagger-commander pet getPetById 1459973494707
     info: status: 200
     info: data: {"id":1459973494707,"name":"Weasley","photoUrls":[],"tags":[],"status":"sold"}
-
