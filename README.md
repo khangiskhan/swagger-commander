@@ -44,3 +44,10 @@ Get the pet object you just created
     $ swagger-commander pet getPetById 1459973494707
     info: status: 200
     info: data: {"id":1459973494707,"name":"Weasley","photoUrls":[],"tags":[],"status":"sold"}
+
+## Help
+
+* JSON/Object arguments must be enclosed in single quotes and follow valid JSON rules (arguments enclosed in double quotes, etc)
+* Array arguments are comma seperated strings (DO NOT include array brackets)
+
+        $ swagger-commander pet findPetsByStatus "available, sold"
