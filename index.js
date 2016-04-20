@@ -64,6 +64,18 @@ function commanderSetup(client) {
     // Split by "tags"
     var apis = client.apis;
 
+    // Commander can't contain white spaces in commands,
+    // so we need to replace API keys that have whitespaces
+    var keyNoWhiteSpace;
+    _.each(apis, function (obj, key) {
+        if (hasWhitespace(key) === true) {
+            console.log('replaced')
+            keyNoWhiteSpace = key.replace(/ /g, '');
+            apis[keyNoWhiteSpace] = obj;
+            delete apis[key];
+        }
+    });
+
     var unrecognizedParentCommand = parentCommand && !_.has(apis, parentCommand);
 
     // If parentCommand given, create subcommand program
@@ -105,4 +117,8 @@ function setSwaggerUrlConfig(swaggerFileUrl) {
         }
         logger.info('Swagger file URL changed to: ', swaggerFileUrl);
     });
+}
+
+function hasWhitespace(s) {
+    return s.indexOf(' ') >= 0;
 }
