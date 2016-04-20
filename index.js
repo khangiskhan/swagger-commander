@@ -69,7 +69,6 @@ function commanderSetup(client) {
     var keyNoWhiteSpace;
     _.each(apis, function (obj, key) {
         if (hasWhitespace(key) === true) {
-            console.log('replaced')
             keyNoWhiteSpace = key.replace(/ /g, '');
             apis[keyNoWhiteSpace] = obj;
             delete apis[key];
