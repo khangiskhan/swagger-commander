@@ -11,6 +11,7 @@ var Swagger   = require('swagger-client');
 var winston   = require('winston');
 var fs        = require('fs');
 var chalk     = require('chalk');
+var validUrl  = require('url-validator');
 
 // Custom libs
 var CONFIG_FILE_PATH      = __dirname + '/config/config.json';
@@ -104,6 +105,10 @@ function commanderSetup(client) {
 }
 
 function setSwaggerUrlConfig(swaggerFileUrl) {
+    if (!validUrl(swaggerFileUrl)) {
+        logger.warn('this URL does not appear to be valid');
+    }
+
     var swagConfig = {
         'swagger_spec_url': swaggerFileUrl
     };
