@@ -98,7 +98,7 @@ function commanderSetup(client) {
     } else if (parentCommand) {
         commander
             .usage(parentCommand + ' [sub-command] [options]');
-        apiOperationCommander.setupSubcommand(apis[parentCommand]);
+        apiOperationCommander.setupSubcommand(apis[parentCommand], client.clientAuthorizations);
     }
 
     return client;
