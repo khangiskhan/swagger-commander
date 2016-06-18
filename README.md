@@ -45,6 +45,12 @@ Get the pet object you just created
     info: status: 200
     info: data: {"id":1459973494707,"name":"Weasley","photoUrls":[],"tags":[],"status":"sold"}
 
+## Authorizations
+
+Using header key auth:
+
+    $ swagger-commander pet addPet {} -K "someHeaderAuth,nameOfHeader,someValue" 
+
 ## Help
 
 * JSON/Object arguments must be enclosed in single quotes and follow valid JSON rules (arguments enclosed in double quotes, etc)
