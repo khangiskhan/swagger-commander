@@ -16,6 +16,7 @@ var validUrl  = require('url-validator');
 // Custom libs
 var CONFIG_FILE_PATH      = __dirname + '/config/config.json';
 var config                = require(CONFIG_FILE_PATH);
+var splash                = require('./lib/splash');
 var apiCommander          = require('./lib/apiCommander');
 var apiOperationCommander = require('./lib/apiOperationCommander');
 var logger    = new (winston.Logger)({
@@ -93,6 +94,11 @@ function commanderSetup(client) {
             console.log('    to point swagger-commander to a different swagger file URL:');
             console.log(chalk.blue('       swagger-commander set-swagger-url <url>'));
         });
+
+        console.log(chalk.green(splash.ascii) + '\n'); // show splash
+        if (client.info && client.info.title) {
+            console.log(client.info.title + ' ' + client.info.version);
+        }
 
         apiCommander.setupParentcommand(apis);
     } else if (parentCommand) {
