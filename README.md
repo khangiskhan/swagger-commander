@@ -47,9 +47,16 @@ Get the pet object you just created
 
 ## Authorizations
 
-Using header key auth:
+One time auth using header key or password auth (more available through help commands):
 
-    $ swagger-commander pet addPet {} -K "someHeaderAuth,nameOfHeader,someValue" 
+    $ swagger-commander pet addPet {} -K "someHeaderAuth,nameOfHeader,someValue"
+    $ swagger-commander pet addPet {} -W "somePasswordAuth,user_name,password"
+
+Note the authorization nickname, such as <b>someHeaderAuth</b> and <b>somePasswordAuth</b> in the above example, must match the security requirement in the specification (see the <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/README.md">OAI Specification</a> for details).
+
+Store/save auth parameters:
+
+    $ TODO coming soon
 
 ## Help
 
