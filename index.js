@@ -90,9 +90,12 @@ function commanderSetup(client) {
             console.log(client.info.title + ' ' + client.info.version);
         }
 
-        apiCommander.setupParentcommand(apis);
+        apiCommander.setupParentcommand(process.argv, apis);
     } else if (parentCommand) {
-        apiOperationCommander.setupSubcommand(apis[parentCommand], client.clientAuthorizations, parentCommand);
+        apiOperationCommander.setupSubcommand(process.argv,
+                                              apis[parentCommand],
+                                              client.clientAuthorizations,
+                                              parentCommand);
     }
 
     return client;
