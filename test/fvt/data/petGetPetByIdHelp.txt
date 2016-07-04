@@ -1,0 +1,24 @@
+
+  Usage: getPetById [options] <petId>
+
+  GET /v2/pet/{petId} Find pet by ID
+
+  Options:
+
+    -h, --help                                                     output usage information
+    -v, --verbose                                                  Display verbose (all) level log details
+    -d, --debug                                                    Display debug level log details
+    -F, --fullResponse                                             Display the full response object from Swagger
+    -P, --prettyResponse                                           Display pretty formatted response
+    -W, --passwordAuth "<authName>, <username>, <password>"        Use password auth
+    -K, --apiHeaderAuth "<authName>, <nameOfHeader>, <value>"      Use header auth
+    -Q, --apiQueryKeyAuth "<authName>, <nameOfQueryKey>, <value>"  Use query key auth
+    -C, --customAuthSigner "<authName>, <pathToSigner>"            Use a swagger-js custom request signer. Arg pathToSigner is the full file path to the node.js file
+
+  Required Parameters (Arguments):
+
+   <petId> - ID of pet to return
+     Parameter Type: path
+     Data Type: long
+
+  Implementation Note: Returns a single pet
