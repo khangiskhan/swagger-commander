@@ -1,0 +1,18 @@
+
+  Usage:  pet [sub-command] [options]
+
+
+  Sub-Commands (Operations):
+
+    addPet [options] <body>              POST /v2/pet Add a new pet to the store
+    updatePet [options] <body>           PUT /v2/pet Update an existing pet
+    findPetsByStatus [options] <status>  GET /v2/pet/findByStatus Finds Pets by status
+    findPetsByTags [options] <tags>      GET /v2/pet/findByTags Finds Pets by tags
+    deletePet [options] <petId>          DELETE /v2/pet/{petId} Deletes a pet
+    getPetById [options] <petId>         GET /v2/pet/{petId} Find pet by ID
+    updatePetWithForm [options] <petId>  POST /v2/pet/{petId} Updates a pet in the store with form data
+    uploadFile [options] <petId>         POST /v2/pet/{petId}/uploadImage uploads an image
+
+  Options:
+
+    -h, --help  output usage information

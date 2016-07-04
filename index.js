@@ -6,7 +6,6 @@
  */
 
 var _         = require('underscore');
-var commander = require('commander');
 var Swagger   = require('swagger-client');
 var winston   = require('winston');
 var fs        = require('fs');
@@ -79,32 +78,24 @@ function commanderSetup(client) {
 
     var unrecognizedParentCommand = parentCommand && !_.has(apis, parentCommand);
 
-    // If parentCommand given, create subcommand program
-    // Otherwise, just show the available APIs
+    // If no parentCommand, create the commander that just shows the available resources
+    // Otherwise, if parentCommand given, create subCommand program that shows the operations for that resource
     if (!parentCommand || unrecognizedParentCommand) {
         if (unrecognizedParentCommand && (parentCommand !== '-h') && (parentCommand !== '--help')) {
             logger.error('Unrecognized parent command: ' + parentCommand);
         }
-        commander
-            .usage('[parent-command] [options]');
-
-        commander.on('--help', function () {
-            console.log('  Config:');
-            console.log();
-            console.log('    to point swagger-commander to a different swagger file URL:');
-            console.log(chalk.blue('       swagger-commander set-swagger-url <url>'));
-        });
 
         console.log(chalk.green(splash.ascii) + '\n'); // show splash
         if (client.info && client.info.title) {
             console.log(client.info.title + ' ' + client.info.version);
         }
 
-        apiCommander.setupParentcommand(apis);
+        apiCommander.setupParentcommand(process.argv, apis);
     } else if (parentCommand) {
-        commander
-            .usage(parentCommand + ' [sub-command] [options]');
-        apiOperationCommander.setupSubcommand(apis[parentCommand], client.clientAuthorizations);
+        apiOperationCommander.setupSubcommand(process.argv,
+                                              apis[parentCommand],
+                                              client.clientAuthorizations,
+                                              parentCommand);
     }
 
     return client;

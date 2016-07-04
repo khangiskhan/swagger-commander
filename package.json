@@ -5,6 +5,9 @@
   "bin": {
     "swagger-commander": "./index.js"
   },
+  "scripts": {
+    "test": "istanbul cover node_modules/mocha/bin/_mocha --report html -- --check-leaks test/fvt"
+  },
   "homepage": "https://github.com/khangiskhan/swagger-commander",
   "repository": {
     "type": "git",
@@ -27,8 +30,13 @@
     "splash": "^0.2.1",
     "swagger-client": "^2.1.13",
     "underscore": "^1.8.3",
-    "winston": "^2.2.0",
-    "url-validator": "^2.0.3"
+    "url-validator": "^2.0.3",
+    "winston": "^2.2.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.4.5",
+    "chai": "^3.5.0",
+    "istanbul": "^0.4.1"
   },
   "author": "Khang Nguyen <khnguyen@ncsu.edu>",
   "contributors": [
