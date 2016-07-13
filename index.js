@@ -5,19 +5,22 @@
  * MIT Licensed
  */
 
-var _         = require('underscore');
+var _         = require('lodash');
 var Swagger   = require('swagger-client');
 var winston   = require('winston');
 var fs        = require('fs');
 var chalk     = require('chalk');
 var validUrl  = require('url-validator');
+var path      = require('path');
 
 // Custom libs
 var CONFIG_FILE_PATH      = __dirname + '/config/config.json';
+var LOCAL_CONFIG_NAME     = '.swagger-commander.json';
 var config                = require(CONFIG_FILE_PATH);
 var splash                = require('./lib/splash');
 var apiCommander          = require('./lib/apiCommander');
 var apiOperationCommander = require('./lib/apiOperationCommander');
+var authConfigParser      = require('./lib/parseAuthConfig');
 var logger    = new (winston.Logger)({
         transports: [
             new (winston.transports.Console)({
@@ -27,12 +30,20 @@ var logger    = new (winston.Logger)({
         ]
     });
 
+// Check current working directory for local config file
+var localConfig = getLocalConfig('./' + LOCAL_CONFIG_NAME);
+if (localConfig) {
+    config = localConfig;
+}
+
 apiCommander.init(logger);
 apiOperationCommander.init(logger);
 
 if (process.argv[2] === 'set-swagger-url') {
     if (process.argv[3]) {
         setSwaggerUrlConfig(process.argv[3]);
+        logger.warn('Local swagger file detected in current directory, ' +
+                    'the swagger-url in the local file has not been changed, you must do that manually');
     } else {
         logger.error('No swagger file URL given');
     }
@@ -45,9 +56,16 @@ if (!swagSpecURL) {
     return;
 }
 
+// parse auth config
+var authObj;
+if (_.has(config, 'auth')) {
+    authObj = authConfigParser(_.get(config, 'auth'), logger);
+}
+
 //swagSpecURL = 'http://petstore.swagger.io/v2/swagger.json'; // DEMO url
 new Swagger({
         url: swagSpecURL,
+        authorizations: authObj,
         usePromise: true
     }
 ).then(commanderSetup)
@@ -85,20 +103,18 @@ function commanderSetup(client) {
             logger.error('Unrecognized parent command: ' + parentCommand);
         }
 
-        console.log(chalk.green(splash.ascii) + '\n'); // show splash
-        if (client.info && client.info.title) {
-            console.log(client.info.title + ' ' + client.info.version);
-        }
-
+        logAdditionalInfo(true, client);
         apiCommander.setupParentcommand(process.argv, apis);
     } else if (parentCommand) {
+        logAdditionalInfo(false);
         apiOperationCommander.setupSubcommand(process.argv,
                                               apis[parentCommand],
                                               client.clientAuthorizations,
                                               parentCommand);
     }
 
-    return client;
+    // Commander in apiCommander and apiOperationCommander never return the thread
+    // so any code here is unreachable
 }
 
 function setSwaggerUrlConfig(swaggerFileUrl) {
@@ -120,6 +136,30 @@ function setSwaggerUrlConfig(swaggerFileUrl) {
     });
 }
 
+function getLocalConfig(filePath) {
+    try {
+        var resolvePath = path.resolve(filePath);
+        var localConfig = require(resolvePath);
+        return localConfig;
+    } catch (e) {
+        return null;
+    }
+}
+
 function hasWhitespace(s) {
     return s.indexOf(' ') >= 0;
+}
+
+function logAdditionalInfo(showStartupInfo, client) {
+    if (showStartupInfo) {
+        // Show splash and version info
+        console.log(chalk.green(splash.ascii) + '\n'); // show splash
+        if (client.info && client.info.title) {
+            console.log(client.info.title + ' ' + client.info.version);
+        }
+    }
+
+    if (localConfig) {
+        logger.info('Using local swagger-config file "' + LOCAL_CONFIG_NAME + '" in current directory');
+    }
 }

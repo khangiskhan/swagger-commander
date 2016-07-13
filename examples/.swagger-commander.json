@@ -1,0 +1,24 @@
+{
+    "swagger_spec_url": "http://petstore.swagger.io/v2/swagger.json",
+    "auth": {
+        "easyapi_basic": {
+            "type": "password",
+            "userName": "someUser",
+            "password": "somePassword"
+        },
+        "someHeaderAuth": {
+            "type": "header",
+            "nameOfHeader": "someHeader",
+            "value": "headerValue"
+        },
+        "someQueryAuth": {
+            "type": "query",
+            "nameOfQueryKey" : "someQueryKey",
+            "value": "queryKeyValue"
+        },
+        "CustomAuthorization": {
+            "type": "customSigner",
+            "path": "./customRequestSigning.js"
+        }
+    }
+}
