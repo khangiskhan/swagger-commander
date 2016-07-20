@@ -59,6 +59,32 @@ Store/save auth parameters:
 
     $ TODO coming soon
 
+## Local swagger-commander config
+
+By default, swagger-commander uses a global config file to run, but it will look in the current working directory for a file named "<b>.swagger-commander.json</b>" and use that instead.
+
+##### Available config options for ".swagger-commander.json"
+* "swagger_spec_url" - The full url to a Swagger spec.
+* "auth" - A map of objects where the key matches the auth nickname defined in the Swagger spec, and the value is an auth object which varies depending on the type.  See examples/.swagger-commander.json for complete details.
+
+.swagger-commander.json example:
+
+    {
+        "swagger_spec_url": "http://petstore.swagger.io/v2/swagger.json",
+        "auth": {
+            "somePasswordAuth": {
+                "type": "password",
+                "userName": "someUser",
+                "password": "somePassword"
+            },
+            "api_key": {
+                "type": "header",
+                "nameOfHeader": "api_key",
+                "value": "special-key"
+            }
+        }
+    }
+    
 ## Help
 
 * JSON/Object arguments must be enclosed in single quotes and follow valid JSON rules (arguments enclosed in double quotes, etc)
