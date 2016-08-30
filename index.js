@@ -42,8 +42,10 @@ apiOperationCommander.init(logger);
 if (process.argv[2] === 'set-swagger-url') {
     if (process.argv[3]) {
         setSwaggerUrlConfig(process.argv[3]);
-        logger.warn('Local swagger file detected in current directory, ' +
+        if (localConfig) {
+            logger.warn('Local swagger file detected in current directory, ' +
                     'the swagger-url in the local file has not been changed, you must do that manually');
+        }
     } else {
         logger.error('No swagger file URL given');
     }
