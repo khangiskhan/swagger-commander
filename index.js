@@ -21,6 +21,7 @@ var splash                = require('./lib/splash');
 var apiCommander          = require('./lib/apiCommander');
 var apiOperationCommander = require('./lib/apiOperationCommander');
 var authConfigParser      = require('./lib/parseAuthConfig');
+var configHelp            = require('./lib/configHelp');
 var logger    = new (winston.Logger)({
         transports: [
             new (winston.transports.Console)({
@@ -72,8 +73,9 @@ new Swagger({
     }
 ).then(commanderSetup)
  .catch(function (err) {
-     logger.error('Error connecting to Swagger file URL: ' + swagSpecURL);
+     logger.error('!Error connecting to Swagger file URL: ' + swagSpecURL);
      logger.error(err);
+     configHelp();
  });
 
 /*************
