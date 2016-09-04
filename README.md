@@ -20,6 +20,8 @@ Point swagger-commander to a Swagger spec (file) URL:
     $ swagger-commander set-swagger-url <url>
       example: swagger-commander set-swagger-url http://petstore.swagger.io/v2/swagger.json
 
+* For a list of other Swagger specs for API's including Gmail, Instagram, & more, visit https://apis.guru/browse-apis/
+
 Show available resources/commands for the Swagger API you just set
 
     $ swagger-commander -h
