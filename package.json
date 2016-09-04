@@ -1,6 +1,6 @@
 {
   "name": "swagger-commander",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "Plug and play command line interface (CLI) to Swagger APIs",
   "bin": {
     "swagger-commander": "./index.js"
