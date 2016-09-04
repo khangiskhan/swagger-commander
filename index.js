@@ -84,6 +84,13 @@ new Swagger({
 function commanderSetup(client) {
     var parentCommand = process.argv[2];
 
+    // If first argument begins with "-", then we are specifying
+    // an option in apiCommander
+    if (parentCommand && parentCommand.charAt(0) === '-') {
+        // TODO this assumes that resources cannot begin with -
+        parentCommand = null;
+    }
+
     // Split by "tags"
     var apis = client.apis;
 
@@ -108,7 +115,7 @@ function commanderSetup(client) {
         }
 
         logAdditionalInfo(true, client);
-        apiCommander.setupParentcommand(process.argv, apis);
+        apiCommander.setupParentcommand(process.argv, client, apis);
     } else if (parentCommand) {
         logAdditionalInfo(false);
         apiOperationCommander.setupSubcommand(process.argv,

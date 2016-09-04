@@ -15,4 +15,7 @@
 
   Options:
 
-    -h, --help  output usage information
+    -h, --help              output usage information
+    -E, --expandOperations  Show detailed help for every sub-command/operation for resource pet
+
+ 
