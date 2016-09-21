@@ -40,6 +40,10 @@ Run the addPet operation (notice the JSON enclosed in single quotes)
     info: status: 200
     info: data: {"id":1459973494707,"name":"Weasley","photoUrls":[],"tags":[],"status":"sold"}
 
+Optionally use file as argument
+
+    $ swagger-commander pet addPet @path/to/file/pet.json
+
 Get the pet object you just created
 
     $ swagger-commander pet getPetById 1459973494707
@@ -84,7 +88,7 @@ By default, swagger-commander uses a global config file to run, but it will look
             }
         }
     }
-    
+
 ## Help
 
 * JSON/Object arguments must be enclosed in single quotes and follow valid JSON rules (arguments enclosed in double quotes, etc)
