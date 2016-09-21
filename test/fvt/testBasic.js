@@ -59,4 +59,27 @@ describe('Test apiOperationCommander commands', function () {
         });
     });
 
+    it('should add the pet using @file argument', function (done) {
+        var cmd = __dirname + '/../../index.js pet addPet @test/fvt/data/addPetArg.json';
+        exec(cmd, function (error, stdout, stderr) {
+            expect(stdout).to.be.defined;
+            expect(error).to.be.null;
+            expect(stderr).to.be.equal('');
+            expect(stdout.match(/status: 200/g)).to.have.length(1);
+            expect(stdout.match(/"name":"Weasley"/g)).to.have.length(1);
+
+            // get the pet that we just added
+            var addedPetId = /"id":(\w+),/.exec(stdout)[1];
+            var getByIdCmd = __dirname + '/../../index.js pet getPetById ' + addedPetId;
+            exec(getByIdCmd, function (error, stdout, stderr) {
+                expect(stdout).to.be.defined;
+                expect(error).to.be.null;
+                expect(stderr).to.be.equal('');
+                expect(stdout.match(/status: 200/g)).to.have.length(1);
+                expect(stdout.match(/"name":"Weasley"/g)).to.have.length(1);
+                done();
+            });
+        });
+    });
+
 });
