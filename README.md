@@ -9,7 +9,7 @@ Install globally as root:
 
     # npm install -g swagger-commander
 
-On Ubuntu or Mac OS X systems install using sudo:
+May need sudo on some systems:
 
     $ sudo npm install -g swagger-commander
 
