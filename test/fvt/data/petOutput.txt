@@ -1,6 +1,10 @@
 
   Usage:  pet [sub-command] [options]
 
+  Options:
+
+    -E, --expandOperations               Show detailed help for every sub-command/operation for resource pet
+    -h, --help                           output usage information
 
   Sub-Commands (Operations):
 
@@ -12,10 +16,3 @@
     getPetById [options] <petId>         GET /v2/pet/{petId} Find pet by ID
     updatePetWithForm [options] <petId>  POST /v2/pet/{petId} Updates a pet in the store with form data
     uploadFile [options] <petId>         POST /v2/pet/{petId}/uploadImage uploads an image
-
-  Options:
-
-    -h, --help              output usage information
-    -E, --expandOperations  Show detailed help for every sub-command/operation for resource pet
-
- 
