@@ -5,7 +5,6 @@
 
   Options:
 
-    -h, --help                                                     output usage information
     -v, --verbose                                                  Display verbose (all) level log details
     -d, --debug                                                    Display debug level log details
     -F, --fullResponse                                             Display the full response object from Swagger
@@ -14,7 +13,7 @@
     -K, --apiHeaderAuth "<authName>, <nameOfHeader>, <value>"      Use header auth
     -Q, --apiQueryKeyAuth "<authName>, <nameOfQueryKey>, <value>"  Use query key auth
     -C, --customAuthSigner "<authName>, <pathToSigner>"            Use a swagger-js custom request signer. Arg pathToSigner is the full file path to the node.js file
-
+    -h, --help                                                     output usage information
   Required Parameters (Arguments):
 
    <petId> - ID of pet to return
@@ -22,3 +21,5 @@
      Data Type: long
 
   Implementation Note: Returns a single pet
+
+
