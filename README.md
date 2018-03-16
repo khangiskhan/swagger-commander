@@ -1,5 +1,5 @@
 # Swagger Commander
-[Build Status](https://travis-ci.org/khangiskhan/swagger-commander.svg?branch=master)
+![Build Status](https://travis-ci.org/khangiskhan/swagger-commander.svg?branch=master)
 
 Inspired by Swagger UI, Swagger Commander is a plug & play command-line (terminal, CLI, console, etc) tool to visualize and consume Swagger API's. Simply point the tool to a Swagger specification (file) URL and you can immediately view and consume your API endpoints.  Under the covers, swagger-commander uses swagger-client.
 
